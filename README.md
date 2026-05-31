@@ -1,80 +1,67 @@
 # G-Scores
 
-This is the instruction for web developer intern assignment at [Golden Owl](https://goldenowl.asia). You will build a simple web.
+Ứng dụng web tra cứu và thống kê điểm thi THPT 2024 (~1 triệu bản ghi).
 
-Web template example. Hope you will make it more beautiful !!!
+## Demo
 
-![template example](./screenshots/mockup-ui.png) 
-# Requirements
-1. From the raw data file ([diem_thi_thpt_2024.csv](./dataset/diem_thi_thpt_2024.csv)) save it into the database with the appropriate structure
+| | URL |
+|---|-----|
+| **Website** | https://g-score-frontend-alpha.vercel.app/ |
+| **API** | https://g-scores-backend-i0hr.onrender.com/api/health |
 
-2. Your application should have at least features in [Must have](#must-have), things in [Nice to have](#nice-to-have) is optional (but yeah, it's attractive if you have).
+---
 
-### Must have:
-- The conversion of raw data into the database must be coded and located in this source code. (**hint**: recommend use migration and seeder)
-- Write a feature to check score from registration number input
-- Write a feature report. There will be 4 levels including: >=8 points, 8 points > && >=6 points, 6 points > && >= 4 points, < 4 points
-    - Statistics of the number of students with scores in the above 4 levels by subjects. (Chart)
-- List top 10 students of group A including (math, physics, chemistry)
-### Nice to have:
+## Công nghệ
 
-- Responsive design (look good on all devices: desktops, tablets & mobile phones).
-- Setup project use Docker.
-- Deploy the application to go live.
+- **Frontend:** React (Hooks), TypeScript, Vite, Tailwind CSS, Recharts
+- **Backend:** NestJS, TypeORM, class-validator, csv-parse
+- **Database:** PostgreSQL
+- **Deploy:** Supabase · Render · Vercel
+- **Local DB:** Docker Compose
 
-# Technical Requirements
+---
 
-### Frontend
-You can use any front-end library/framework like React, Angular, Vue, ... or just simple things with HTML + CSS + Javascript (JQuery).
-- For JS intern use React you need to have: 
-  * React Hooks
-- Fonts (optional);
-  - [https://fonts.google.com/specimen/Rubik?query=Rubik](https://fonts.google.com/specimen/Rubik?query=Rubik)
-- You can use some available interfaces such as: [AdminLTe](https://adminlte.io/), [TailAdmin](https://tailadmin.com/)...
-  
-### Backend: 
-Choose one of your applied back-end libraries/frameworks: Maybe Laravel(PHP), Ruby on Rails, NestJS (NodeJs), Django (Python), unlimited framework... or a structure that you come up with yourselt. 
-- **Mandatory** use of **OOP programming** for managing subjects.
-- Need form validation and logic tightening.
-- For NodeJs, use TypeScript is a plus.
-- Use ORM for interacting with Database.
-- Database: You can use postgreSQL, Mysql, mongoDB... to manage or cache the data. 
+## Tính năng
 
-### Deployment
-Some providers allow free deployment for the trial version  (note: Maybe some suppliers will update their policies and prices)
+- **Dashboard** — tổng quan, điều hướng nhanh
+- **Tra cứu điểm** — nhập số báo danh (8 chữ số), xem điểm 9 môn và mã ngoại ngữ
+- **Báo cáo phân bố** — biểu đồ số thí sinh theo 4 mức điểm từng môn (≥8 · 6–8 · 4–6 · &lt;4)
+- **Top 10 khối A** — xếp hạng theo tổng Toán + Vật lí + Hóa học
+- **Import dữ liệu** — migration tạo bảng, seeder đọc CSV `dataset/diem_thi_thpt_2024.csv`
+- **Quản lý môn học (OOP)** — class `Subject` trên backend
 
-- Heroku - https://heroku.com - Deploying Front & Backend
-- Vercel (Zeit) - https://vercel.com - Deploying Front & Backend apps at free of cost
-- Fly - https://fly.io - Deploying Front & Backend apps at free of cost
-- Deta - https://deta.sh - Deploying Node.js and Python apps and APIs. They support most web frameworks like Express, Koa, Flask, and FastAPI. They also provide a very fast and powerful NoSQL database for free.
-- Heliohost - https://heliohost.org - PHP, Ruby on rails, perl, django, java(jsp)
-- `...`
-# Hướng dẫn chạy dự án (local)
+---
 
-## Yêu cầu
+## Chạy local
+
+### Yêu cầu
 
 - Node.js 20+
-- Docker (PostgreSQL)
+- PostgreSQL (Docker hoặc Supabase)
 
-## 1. Database
+### 1. Database
 
 ```bash
 docker compose up -d
 ```
 
-## 2. Backend
+Hoặc dùng Supabase — cấu hình trong `backend/.env`.
+
+### 2. Backend
 
 ```bash
 cd backend
-copy .env.example .env    # Windows — hoặc: cp .env.example .env
+copy .env.example .env
 npm install
-npm run seed              # lần đầu — import CSV (~ vài phút)
+npm run seed
 npm run start:dev
 ```
 
 API: `http://localhost:3000/api`
 
-## 3. Frontend (React + Vite + Tailwind)
+Lần đầu seed ~1.061.605 dòng, mất vài chục phút. Chạy lại `npm run seed` nếu bị ngắt — bỏ qua SBD đã import.
+
+### 3. Frontend
 
 ```bash
 cd frontend
@@ -85,19 +72,100 @@ npm run dev
 
 Web: `http://localhost:5173` (proxy `/api` → backend)
 
-Chi tiết: [frontend/README.md](./frontend/README.md) · [backend/README.md](./backend/README.md)
+---
 
-# Submission
+## Deploy
 
-After completing the assignment, please push the source code to remote repository (github/gitlab), then send us the link to your repository.
+| Thành phần | Nền tảng |
+|------------|----------|
+| Database | Supabase |
+| Backend | Render |
+| Frontend | Vercel |
 
-Don't forget to add `README.md` which includes guide to run your project locally and demo link.
+**Render:** `npm install && npm run build` · Start: `npm run start:prod` · Env DB giống `backend/.env` (pooler: `postgres.<project-ref>`, port `6543`).
 
+**Vercel:**
 
-**GOOD LUCK!!!**
+```env
+VITE_API_URL=https://<app-render>.onrender.com/api
+```
 
-![Your Code Work](./screenshots/meme.png)
+Cần hậu tố `/api`. Redeploy sau khi đổi biến.
 
-# Contributors
+**Seed lên Supabase** (từ máy local, `.env` trỏ cloud):
 
-- Edric Cao (from GO)
+```bash
+cd backend
+npm run seed
+```
+
+---
+
+## API
+
+| Method | Path | Mô tả |
+|--------|------|--------|
+| GET | `/api/health` | Health check |
+| GET | `/api/scores/subjects` | Danh sách môn |
+| GET | `/api/scores/lookup/:sbd` | Tra cứu theo SBD |
+| GET | `/api/scores/report/distribution` | Phân bố điểm theo môn |
+| GET | `/api/scores/report/top-group-a?limit=10` | Top khối A |
+
+Mức điểm báo cáo: `gte8` (≥8) · `gte6_lt8` (6–8) · `gte4_lt6` (4–6) · `lt4` (&lt;4).
+
+```bash
+curl http://localhost:3000/api/scores/lookup/01000001
+curl http://localhost:3000/api/scores/report/distribution
+```
+
+---
+
+## Biến môi trường
+
+**Backend** — `backend/.env` (mẫu: `.env.example`)
+
+| Biến | Mô tả |
+|------|--------|
+| `PORT` | Cổng HTTP (3000) |
+| `DB_HOST` | Host PostgreSQL |
+| `DB_PORT` | 5432 local / 6543 Supabase pooler |
+| `DB_USERNAME` | `postgres` / `postgres.<project-ref>` |
+| `DB_PASSWORD` | Mật khẩu DB |
+| `DB_DATABASE` | `gscores` / `postgres` |
+| `CSV_FILE_PATH` | Đường dẫn CSV (tùy chọn) |
+| `SEED_ON_STARTUP` | Tự seed khi bảng trống |
+| `SEED_BATCH_SIZE` | Batch insert (mặc định 500) |
+
+**Frontend** — `frontend/.env`
+
+| Biến | Mô tả |
+|------|--------|
+| `VITE_API_URL` | Base API (`http://localhost:3000/api` hoặc URL Render + `/api`) |
+
+---
+
+## Cấu trúc project
+
+```
+├── backend/                 # NestJS
+│   └── src/
+│       ├── database/migrations/
+│       ├── common/seeder/
+│       └── module/score/
+├── frontend/                # React + Vite
+├── dataset/diem_thi_thpt_2024.csv
+└── docker-compose.yml
+```
+
+---
+
+## Scripts
+
+| Lệnh | Thư mục |
+|------|---------|
+| `npm run start:dev` | backend |
+| `npm run start:prod` | backend |
+| `npm run seed` | backend |
+| `npm run migration:run` | backend |
+| `npm run dev` | frontend |
+| `npm run build` | frontend |
