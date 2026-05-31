@@ -21,6 +21,42 @@
 
 ---
 
+## Quyết định kỹ thuật
+
+### Stack ứng dụng
+
+| Thành phần | Lựa chọn | Lý do |
+|------------|----------|--------|
+| Frontend | React + TypeScript + Vite | Hệ sinh thái quen thuộc, build nhanh, type-safe giúp giảm lỗi khi map dữ liệu API |
+| UI | Tailwind CSS | Styling nhanh, giao diện nhất quán mà không cần file CSS riêng cho từng màn |
+| Biểu đồ | Recharts | Đủ cho báo cáo phân bố 4 mức điểm, tích hợp tốt với React |
+| Backend | NestJS | Cấu trúc module rõ ràng, DI, ValidationPipe — phù hợp API có nhiều endpoint báo cáo |
+| ORM | TypeORM | Migration version-controlled, tương thích PostgreSQL và NestJS |
+| Validation | class-validator | Validate SBD (8 chữ số) ngay tại DTO, trả lỗi chuẩn trước khi vào service |
+| Import CSV | csv-parse + stream | Đọc file ~1 triệu dòng theo stream, insert theo batch — tránh load hết vào RAM |
+| Database | PostgreSQL | Xử lý tốt dataset lớn; dùng `COUNT(*) FILTER` cho thống kê phân bố theo môn |
+| Local dev | Docker Compose | Chạy PostgreSQL local không phụ thuộc cloud, đồng bộ với môi trường production |
+
+**OOP — class `Subject`:** gom metadata môn học (key, label, nhóm) và logic đọc điểm từ bản ghi; controller/service dùng chung một nguồn thay vì hard-code tên cột.
+
+**Seeder:** batch insert (mặc định 500 dòng/lần) kèm `orIgnore` — seed idempotent, chạy lại an toàn nếu bị ngắt giữa chừng.
+
+### DevOps & deploy
+
+| Thành phần | Nền tảng | Lý do |
+|------------|----------|--------|
+| Frontend | Vercel | Liên kết GitHub, auto-deploy mỗi lần push — phù hợp SPA React/Vite |
+| Backend | Render | Liên kết GitHub, build NestJS tự động, free tier đủ cho demo |
+| Database | Supabase | PostgreSQL managed, free tier, pooler sẵn cho kết nối từ Render |
+
+**Vấn đề Render free tier:** instance tự sleep sau ~15 phút không có request → lần gọi API đầu tiên (cold start) có thể mất 30–60 giây, frontend báo lỗi hoặc treo loading nếu reviewer mở demo sau thời gian idle.
+
+**Giải pháp:** dùng [UptimeRobot](https://uptimerobot.com/) ping định kỳ endpoint `/api/health` (~5 phút/lần) để giữ backend wake — đảm bảo frontend luôn nhận response khi demo, không cần nâng cấp gói trả phí.
+
+> **Trade-off:** UptimeRobot phù hợp demo/submission; production thật nên cân nhắc paid tier, cache, hoặc serverless thay vì giữ instance free tier luôn chạy.
+
+---
+
 ## Tính năng
 
 - **Dashboard** — tổng quan, điều hướng nhanh
