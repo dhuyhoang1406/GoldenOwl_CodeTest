@@ -12,6 +12,7 @@ export default new DataSource({
   username: process.env.DB_USERNAME ?? 'postgres',
   password: process.env.DB_PASSWORD ?? 'postgres',
   database: process.env.DB_DATABASE ?? 'gscores',
+  ssl: { rejectUnauthorized: false },
   entities: [Score],
   migrations: [CreateScoresTable1748610000000],
   synchronize: false,

@@ -24,6 +24,8 @@ import { AppController } from './app.controller';
         username: config.get<string>('database.username'),
         password: config.get<string>('database.password'),
         database: config.get<string>('database.database'),
+        ssl: { rejectUnauthorized: false }, // thêm dòng này
+        extra: { keepAlive: true },
         entities: [Score],
         migrations: [CreateScoresTable1748610000000],
         migrationsRun: true,
